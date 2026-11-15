@@ -54,7 +54,14 @@ export function lineas(l) {
   if (l.origen === 'Seguridad Social') enlace = `Seguridad Social (elige «${l.tipo_ss}»${l.provincia ? ` → ${l.provincia}` : ''}${l.lote ? ` → lote ${l.lote}` : ''})`;
   else if (l.origen === 'BOE') enlace = `Anuncio ${l.id} en el BOE`;
   const leido = l.leido ? ` · leído el ${fecha(l.leido)}` : '';
-  return { titulo: l.titulo, meta: meta.join(' · '), estado: l.estado ?? '', detalle: l.detalle ?? '', precio: precio.join(' · '), enlace, leido };
+  const sub = urlSubasta(l.subasta);
+  const subasta = sub ? `Subasta ${l.subasta} en el Portal de Subastas del BOE` : '';
+  return { titulo: l.titulo, meta: meta.join(' · '), estado: l.estado ?? '', detalle: l.detalle ?? '', precio: precio.join(' · '), enlace, leido, subasta };
+}
+
+/** Enlace a la subasta en el Portal de Subastas del BOE (igual que leer.url_subasta_boe). */
+export function urlSubasta(id) {
+  return /^SUB-[A-Z]{2}-\d{4}-[0-9A-Z]{4,40}$/.test(id ?? '') ? `https://subastas.boe.es/ds.php?id=${id}` : '';
 }
 
 function tarjeta(doc, l) {
@@ -76,6 +83,13 @@ function tarjeta(doc, l) {
   const p = doc.createElement('p');
   p.className = 'fuente';
   p.append('Fuente: ');
+  if (t.subasta) {
+    const s = doc.createElement('a');
+    s.href = urlSubasta(l.subasta);
+    s.rel = 'noopener';
+    s.textContent = t.subasta;
+    p.append(s, ' · ');
+  }
   const a = doc.createElement('a');
   a.href = /^https:\/\//.test(l.url) ? l.url : '#';
   a.rel = 'noopener';
