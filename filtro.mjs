@@ -46,12 +46,13 @@ export function lineas(l) {
   if (l.fecha) meta.push(`Subasta: ${fecha(l.fecha)}`);
   if (l.publicado && l.origen === 'BOE') meta.push(`BOE del ${fecha(l.publicado)}`);
   const precio = [];
-  if (l.salida !== undefined) precio.push(`Salida${l.lote && l.tasacion !== l.salida ? ` del lote ${l.lote}` : ''}: ${euros(l.salida)}`);
+  if (l.salida !== undefined) precio.push(`${l.origen === 'Venta de Inmuebles' ? 'Precio' : 'Salida'}${l.lote && l.tasacion !== l.salida ? ` del lote ${l.lote}` : ''}: ${euros(l.salida)}`);
   if (l.tasacion !== undefined && l.tasacion !== l.salida) precio.push(`Tasación del bien: ${euros(l.tasacion)}`);
   if (l.cargas !== undefined) precio.push(l.cargas === 0 ? 'Sin cargas' : `Cargas: ${euros(l.cargas)}`);
   if (l.superficie) precio.push(superficie(l.superficie));
   let enlace = 'Ficha en Patrimonio del Estado';
   if (l.origen === 'Seguridad Social') enlace = `Seguridad Social (elige «${l.tipo_ss}»${l.provincia ? ` → ${l.provincia}` : ''}${l.lote ? ` → lote ${l.lote}` : ''})`;
+  else if (l.origen === 'Venta de Inmuebles') enlace = `Venta de Inmuebles de la Seguridad Social (elige «Disponibles» → «${l.tipo_ss}»${l.provincia ? ` → ${l.provincia}` : ''})`;
   else if (l.origen === 'BOE') enlace = `Anuncio ${l.id} en el BOE`;
   const leido = l.leido ? ` · leído el ${fecha(l.leido)}` : '';
   const sub = urlSubasta(l.subasta);
